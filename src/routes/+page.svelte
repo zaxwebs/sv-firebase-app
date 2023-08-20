@@ -2,7 +2,7 @@
 <script>
 	import { onMount } from 'svelte'
 	import { db } from '$lib/firebase'
-	import { addDoc, getDocs, collection, doc, updateDoc } from 'firebase/firestore'
+	import { addDoc, getDocs, collection, doc, updateDoc, deleteDoc } from 'firebase/firestore'
 
 	let todos = []
 	let newTodo = ''
@@ -42,6 +42,18 @@
 		fetchTodos()
 	}
 
+	async function deleteTodo(todoId) {
+		const todoRef = doc(db, 'todos', todoId)
+
+		try {
+			await deleteDoc(todoRef)
+			console.log(`Todo ${todoId} deleted`)
+		} catch (error) {
+			console.error('Error deleting todo:', error)
+		}
+		fetchTodos()
+	}
+
 	onMount(fetchTodos)
 </script>
 
@@ -59,6 +71,7 @@
 						Pending
 					{/if}
 				</button>
+				<button on:click={() => deleteTodo(todo.id)}> Delete </button>
 			</li>
 		{/each}
 	</ul>
